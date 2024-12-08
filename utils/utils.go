@@ -17,7 +17,7 @@ func Scrape(imdbID string) (TitleData, error) {
 	var c = colly.NewCollector()
 
 	// IMDb ID
-	data.IMDbId = imdbID
+	data.IMDbID = imdbID
 
 	// Title Name
 	c.OnHTML("span.hero__primary-text", func(e *colly.HTMLElement) {
@@ -26,7 +26,7 @@ func Scrape(imdbID string) (TitleData, error) {
 
 	// Type
 	c.OnHTML("h1[data-testid='hero__pageTitle']", func(e *colly.HTMLElement) {
-		data.Overview = e.DOM.Next().Find("li").First().Text()
+		data.Type = e.DOM.Next().Find("li").First().Text()
 	})
 
 	// Short Overview
@@ -37,8 +37,7 @@ func Scrape(imdbID string) (TitleData, error) {
 	// Poster Image
 	c.OnHTML("img.ipc-image", func(e *colly.HTMLElement) {
 		if e.Index == 0 {
-			src := e.Attr("src")
-			parts := strings.Split(src, ".")
+			parts := strings.Split(e.Attr("src"), ".")
 			if len(parts) > 2 {
 				subparts := strings.Split(parts[2], "/")
 				if len(subparts) > 0 {
@@ -88,8 +87,7 @@ func Scrape(imdbID string) (TitleData, error) {
 	foundDirectors := false
 	c.OnHTML("span", func(e *colly.HTMLElement) {
 		if !foundDirectors && (strings.Contains(e.Text, "Director") || strings.Contains(e.Text, "Directors")) {
-			nextElem := e.DOM.Next()
-			nextElem.Find("a").Each(func(_ int, s *goquery.Selection) {
+			e.DOM.Next().Find("a").Each(func(_ int, s *goquery.Selection) {
 				href, exists := s.Attr("href")
 				if exists {
 					match := RegExPersonID.FindStringSubmatch(href)

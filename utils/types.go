@@ -8,8 +8,9 @@ type ListItem struct {
 }
 
 type TitleData struct {
-	IMDbId              string     `json:"imdb_id"`
+	IMDbID              string     `json:"imdb_id"`
 	Title               string     `json:"title"`
+	Type                string     `json:"type"`
 	Overview            string     `json:"overview"`
 	Poster              string     `json:"poster"`
 	Directors           []ListItem `json:"directors"`
