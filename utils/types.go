@@ -25,6 +25,12 @@ type TitleData struct {
 	Rating              string     `json:"rating"`
 }
 
+type Cast struct {
+	ID        string `json:"imdb_id"`
+	Actor     string `json:"actor"`
+	Character string `json:"character"`
+}
+
 var RegExIMDbID = regexp.MustCompile(`/title/(tt\d+)/`)
 var RegExPersonID = regexp.MustCompile(`/name/(nm\d+)/`)
 var RegExGenreID = regexp.MustCompile(`/interest/(in\d+)/`)

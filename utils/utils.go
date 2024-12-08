@@ -184,3 +184,37 @@ func Search(query string) ([]TitleData, error) {
 
 	return results, nil
 }
+
+func ScrapeCast(imdbID string) ([]Cast, error) {
+	var c = colly.NewCollector(
+		colly.Async(true),
+	)
+
+	var cast []Cast
+
+	c.OnHTML("tr.odd, tr.even", func(e *colly.HTMLElement) {
+		td := e.DOM.Find("td.primary_photo")
+
+		href, existsHref := td.Find("a").Attr("href")
+		name, existsName := td.Find("a").Find("img").Attr("title")
+
+		if !existsHref || !existsName {
+			return
+		}
+
+		cast = append(cast, Cast{
+			ID:        RegExPersonID.FindStringSubmatch(href)[1],
+			Actor:     name,
+			Character: e.DOM.Find("td.character").Find("a").Text(),
+		})
+	})
+
+	err := c.Visit("https://www.imdb.com/title/" + imdbID + "/fullcredits")
+	if err != nil {
+		log.Fatal("Failed to visit the website:", err)
+	}
+
+	c.Wait()
+
+	return cast, nil
+}
