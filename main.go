@@ -12,6 +12,11 @@ import (
 
 func main() {
 	log.SetOutput(io.Discard)
+	err := utils.ConnectToDatabase()
+	if err != nil {
+		log.Fatal("Unable to connect to the Database", err)
+		return
+	}
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 
