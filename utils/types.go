@@ -3,32 +3,32 @@ package utils
 import "regexp"
 
 type ListItem struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	ID   string `bson:"id"`
+	Name string `bson:"name"`
 }
 
 type TitleData struct {
-	IMDbID              string     `json:"imdb_id"`
-	Title               string     `json:"title"`
-	Type                string     `json:"type"`
-	Overview            string     `json:"overview"`
-	Poster              string     `json:"poster"`
-	Directors           []ListItem `json:"directors"`
-	Creators            []ListItem `json:"creators"`
-	Genres              []ListItem `json:"genres"`
-	ProductionCompanies []ListItem `json:"production_companies"`
-	Score               string     `json:"score"`
-	ScoredBy            string     `json:"scored_by"`
-	Seasons             string     `json:"seasons"`
-	Episodes            int        `json:"episodes"`
-	Year                string     `json:"year"`
-	Rating              string     `json:"rating"`
+	IMDbID              string     `bson:"imdb_id"`
+	Title               string     `bson:"title"`
+	Type                string     `bson:"type"`
+	Overview            string     `bson:"overview"`
+	Poster              string     `bson:"poster"`
+	Directors           []ListItem `bson:"directors"`
+	Creators            []ListItem `bson:"creators"`
+	Genres              []ListItem `bson:"genres"`
+	ProductionCompanies []ListItem `bson:"production_companies"`
+	Score               string     `bson:"score"`
+	ScoredBy            string     `bson:"scored_by"`
+	Seasons             string     `bson:"seasons"`
+	Episodes            int        `bson:"episodes"`
+	Year                string     `bson:"year"`
+	Rating              string     `bson:"rating"`
 }
 
 type Cast struct {
-	ID        string `json:"imdb_id"`
-	Actor     string `json:"actor"`
-	Character string `json:"character"`
+	ID        string `bson:"imdb_id"`
+	Actor     string `bson:"actor"`
+	Character string `bson:"character"`
 }
 
 var RegExIMDbID = regexp.MustCompile(`/title/(tt\d+)/`)

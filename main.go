@@ -2,12 +2,10 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"myapp/utils"
 	"net/http"
-	"strings"
 )
 
 func main() {
@@ -18,8 +16,7 @@ func main() {
 		return
 	}
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-
+	http.HandleFunc("/title", func(w http.ResponseWriter, r *http.Request) {
 		imdbID := r.URL.Query().Get("imdb_id")
 		if imdbID == "" {
 			http.Error(w, "Missing query parameter 'imdb_id'", http.StatusBadRequest)
@@ -43,13 +40,13 @@ func main() {
 	})
 
 	http.HandleFunc("/search", func(w http.ResponseWriter, r *http.Request) {
-
-		query := r.URL.Query().Get("query")
+		query := r.URL.Query().Get("title")
 		if query == "" {
-			http.Error(w, "Missing query parameter 'query'", http.StatusBadRequest)
+			http.Error(w, "Missing query parameter 'title'", http.StatusBadRequest)
+			return
 		}
 
-		data, err := utils.Search(strings.ReplaceAll(query, " ", "+"))
+		data, err := utils.Search(query)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -66,7 +63,6 @@ func main() {
 	})
 
 	http.HandleFunc("/cast", func(w http.ResponseWriter, r *http.Request) {
-
 		imdbID := r.URL.Query().Get("imdb_id")
 		if imdbID == "" {
 			http.Error(w, "Missing query parameter 'imdb_id'", http.StatusBadRequest)
@@ -90,7 +86,6 @@ func main() {
 	})
 
 	// Start the server
-	fmt.Println("Starting server on :8080...")
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatal("Failed to start server: ", err)
 	}

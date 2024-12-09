@@ -9,10 +9,23 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func Scrape(imdbID string) (TitleData, error) {
 	var data TitleData
+
+	err := GetCollection().FindOne(Ctx, bson.M{"imdb_id": imdbID}).Decode(&data)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			fmt.Println("No document found with the given IMDb ID")
+		} else {
+			log.Fatalf("Error finding document: %v", err)
+		}
+	} else {
+		return data, nil
+	}
 
 	var c = colly.NewCollector()
 
@@ -139,12 +152,19 @@ func Scrape(imdbID string) (TitleData, error) {
 		})
 	})
 
-	err := c.Visit("https://www.imdb.com/title/" + imdbID)
+	err = c.Visit("https://www.imdb.com/title/" + imdbID)
 	if err != nil {
 		return data, err
 	}
 
 	c.Wait()
+
+	_, err = GetCollection().InsertOne(Ctx, data)
+	if err != nil {
+		log.Fatalf("Error inserting data: %v", err)
+		return data, err
+	}
+
 	return data, nil
 }
 
