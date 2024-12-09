@@ -6,6 +6,7 @@ import (
 	"log"
 	"myapp/utils"
 	"net/http"
+	"strings"
 )
 
 func main() {
@@ -46,7 +47,7 @@ func main() {
 			return
 		}
 
-		data, err := utils.Search(query)
+		data, err := utils.Search(strings.ReplaceAll(query, " ", "+"))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
