@@ -6,33 +6,33 @@ import (
 )
 
 type ListItem struct {
-	ID   string `bson:"id"`
-	Name string `bson:"name"`
+	ID   string `bson:"id" json:"id"`
+	Name string `bson:"name" json:"name"`
 }
 
 type TitleData struct {
-	IMDbID              string     `bson:"imdb_id"`
-	Title               string     `bson:"title"`
-	Type                string     `bson:"type"`
-	Overview            string     `bson:"overview"`
-	Poster              string     `bson:"poster"`
-	Directors           []ListItem `bson:"directors"`
-	Creators            []ListItem `bson:"creators"`
-	Genres              []ListItem `bson:"genres"`
-	ProductionCompanies []ListItem `bson:"production_companies"`
-	Score               string     `bson:"score"`
-	ScoredBy            string     `bson:"scored_by"`
-	Seasons             string     `bson:"seasons"`
-	Episodes            int        `bson:"episodes"`
-	Year                string     `bson:"year"`
-	Rating              string     `bson:"rating"`
-	ExpireAt            time.Time  `bson:"expireAt"`
+	IMDbID              string     `bson:"imdb_id" json:"imdb_id"`
+	Title               string     `bson:"title" json:"title"`
+	Type                string     `bson:"type" json:"type"`
+	Overview            string     `bson:"overview" json:"overview"`
+	Poster              string     `bson:"poster" json:"poster"`
+	Directors           []ListItem `bson:"directors" json:"directors"`
+	Creators            []ListItem `bson:"creators" json:"creators"`
+	Genres              []ListItem `bson:"genres" json:"genres"`
+	ProductionCompanies []ListItem `bson:"production_companies" json:"production_companies"`
+	Score               string     `bson:"score" json:"score"`
+	ScoredBy            string     `bson:"scored_by" json:"scored_by"`
+	Seasons             string     `bson:"seasons" json:"seasons"`
+	Episodes            int        `bson:"episodes" json:"episodes"`
+	Year                string     `bson:"year" json:"year"`
+	Rating              string     `bson:"rating" json:"rating"`
+	ExpireAt            time.Time  `bson:"expireAt" json:"expireAt"`
 }
 
 type Cast struct {
-	ID        string `bson:"imdb_id"`
-	Actor     string `bson:"actor"`
-	Character string `bson:"character"`
+	ID        string `bson:"imdb_id" json:"imdb_id"`
+	Actor     string `bson:"actor" json:"actor"`
+	Character string `bson:"character" json:"character"`
 }
 
 var RegExIMDbID = regexp.MustCompile(`/title/(tt\d+)/`)
