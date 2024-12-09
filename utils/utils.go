@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly"
@@ -158,6 +159,9 @@ func Scrape(imdbID string) (TitleData, error) {
 	}
 
 	c.Wait()
+
+	// expire after 7 days
+	data.ExpireAt = time.Now().AddDate(0, 0, 7)
 
 	_, err = GetCollection().InsertOne(Ctx, data)
 	if err != nil {

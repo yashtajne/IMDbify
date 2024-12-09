@@ -1,6 +1,9 @@
 package utils
 
-import "regexp"
+import (
+	"regexp"
+	"time"
+)
 
 type ListItem struct {
 	ID   string `bson:"id"`
@@ -23,6 +26,7 @@ type TitleData struct {
 	Episodes            int        `bson:"episodes"`
 	Year                string     `bson:"year"`
 	Rating              string     `bson:"rating"`
+	ExpireAt            time.Time  `bson:"expireAt"`
 }
 
 type Cast struct {
