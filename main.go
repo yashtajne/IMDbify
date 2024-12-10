@@ -8,17 +8,11 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 )
 
 func main() {
 	// Suppress Gin's default logging if needed
 	gin.SetMode(gin.ReleaseMode)
-
-	// Load the .env file
-	if err := godotenv.Load(); err != nil {
-		log.Fatalf("Error loading .env file: %v", err)
-	}
 
 	// Connect to the database
 	err := utils.ConnectToDatabase()
