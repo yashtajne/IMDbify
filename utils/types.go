@@ -30,7 +30,7 @@ type TitleData struct {
 }
 
 type Cast struct {
-	ID        string `bson:"imdb_id" json:"imdb_id"`
+	ID        string `bson:"id" json:"id"`
 	Actor     string `bson:"actor" json:"actor"`
 	Character string `bson:"character" json:"character"`
 }
@@ -39,3 +39,4 @@ var RegExIMDbID = regexp.MustCompile(`/title/(tt\d+)/`)
 var RegExPersonID = regexp.MustCompile(`/name/(nm\d+)/`)
 var RegExGenreID = regexp.MustCompile(`/interest/(in\d+)/`)
 var RegExCompanyID = regexp.MustCompile(`/company/(co\d+)/`)
+var RegeExImageHash = regexp.MustCompile(`M/([^\.]+)`)

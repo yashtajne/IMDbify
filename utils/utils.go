@@ -51,12 +51,9 @@ func Scrape(imdbID string) (TitleData, error) {
 	// Poster Image
 	c.OnHTML("img.ipc-image", func(e *colly.HTMLElement) {
 		if e.Index == 0 {
-			parts := strings.Split(e.Attr("src"), ".")
-			if len(parts) > 2 {
-				subparts := strings.Split(parts[2], "/")
-				if len(subparts) > 0 {
-					data.Poster = subparts[len(subparts)-1]
-				}
+			match := RegeExImageHash.FindStringSubmatch(e.Attr("src"))
+			if len(match) > 1 {
+				data.Poster = match[1]
 			}
 		}
 	})
@@ -227,19 +224,19 @@ func ScrapeCast(imdbID string) ([]Cast, error) {
 	var cast []Cast
 
 	c.OnHTML("tr.odd, tr.even", func(e *colly.HTMLElement) {
-		td := e.DOM.Find("td.primary_photo")
+		a := e.DOM.Find("td.primary_photo").Find("a")
 
-		href, existsHref := td.Find("a").Attr("href")
-		name, existsName := td.Find("a").Find("img").Attr("title")
+		href, existsHref := a.Attr("href")
+		name, _ := a.Find("img").Attr("title")
 
-		if !existsHref || !existsName {
+		if !existsHref {
 			return
 		}
 
 		cast = append(cast, Cast{
 			ID:        RegExPersonID.FindStringSubmatch(href)[1],
 			Actor:     name,
-			Character: e.DOM.Find("td.character").Find("a").Text(),
+			Character: e.DOM.Find("td.character").Find("a").First().Text(),
 		})
 	})
 
