@@ -64,7 +64,11 @@ func Scrape(imdbID string) (TitleData, error) {
 	// Number of Seasons
 	c.OnHTML("select#browse-episodes-season", func(e *colly.HTMLElement) {
 		seasons := e.Attr("aria-label")
-		data.Seasons = seasons
+		data.Seasons, err = strconv.Atoi(strings.TrimSuffix(seasons, " seasons"))
+		if err != nil {
+			log.Println("Error converting text to integer:", err)
+			return
+		}
 	})
 
 	// Number of Episodes
@@ -94,7 +98,7 @@ func Scrape(imdbID string) (TitleData, error) {
 
 	// Rating
 	c.OnHTML(fmt.Sprintf("a[href='/title/%s/parentalguide/certificates?ref_=tt_ov_pg']", imdbID), func(e *colly.HTMLElement) {
-		data.Rating = e.Text
+		data.Rating = strings.TrimSpace(e.Text)
 	})
 
 	// Directors
@@ -162,6 +166,12 @@ func Scrape(imdbID string) (TitleData, error) {
 
 	// expire after 7 days
 	data.ExpireAt = time.Now().AddDate(0, 0, 7)
+
+	if len(data.Directors) != 0 {
+		data.Type = "Movie"
+		data.Seasons = 0
+		data.Episodes = 0
+	}
 
 	_, err = GetCollection().InsertOne(Ctx, data)
 	if err != nil {

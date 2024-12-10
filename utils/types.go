@@ -22,7 +22,7 @@ type TitleData struct {
 	ProductionCompanies []ListItem `bson:"production_companies" json:"production_companies"`
 	Score               string     `bson:"score" json:"score"`
 	ScoredBy            string     `bson:"scored_by" json:"scored_by"`
-	Seasons             string     `bson:"seasons" json:"seasons"`
+	Seasons             int        `bson:"seasons" json:"seasons"`
 	Episodes            int        `bson:"episodes" json:"episodes"`
 	Year                string     `bson:"year" json:"year"`
 	Rating              string     `bson:"rating" json:"rating"`
