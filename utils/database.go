@@ -3,11 +3,9 @@ package utils
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 	"time"
 
-	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -18,17 +16,6 @@ var Ctx context.Context
 
 // ConnectToDatabase connects to MongoDB and initializes the global client and context variables
 func ConnectToDatabase() error {
-
-	// Attempt to load the .env file
-	if err := godotenv.Load(); err != nil {
-		// Check if the URI environment variable is not empty
-		uri := os.Getenv("URI")
-		if uri == "" {
-			log.Fatalf("error loading .env file and URI environment variable is not set: %v", err)
-		}
-		// Log a warning and continue
-		log.Println("Warning: .env file not found, but URI environment variable is set. Continuing...")
-	}
 
 	// Get the URI from the environment variable
 	uri := os.Getenv("URI")
