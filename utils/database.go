@@ -3,9 +3,11 @@ package utils
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"time"
 
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -20,7 +22,14 @@ func ConnectToDatabase() error {
 	// Get the URI from the environment variable
 	uri := os.Getenv("URI")
 	if uri == "" {
-		return fmt.Errorf("URI environment variable is not set")
+		if err := godotenv.Load(); err != nil {
+			uri = os.Getenv("URI")
+			if uri == "" {
+				return fmt.Errorf("error loading .env file and URI environment variable is not set: %v", err)
+			} else {
+				log.Println("Warning: .env file not found, but URI environment variable is set. Continuing...")
+			}
+		}
 	}
 
 	// Set client options
