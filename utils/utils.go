@@ -251,11 +251,22 @@ func ScrapeCast(imdbID string) ([]Cast, error) {
 }
 
 func ScrapeEpisodes(imdbID string, season int) (Season, error) {
+	var data Season
+
+	err := Episodes.FindOne(Ctx, bson.M{"imdb_id": imdbID, "season": season}).Decode(&data)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			fmt.Println("No document found with the given IMDb ID")
+		} else {
+			log.Fatalf("Error finding document: %v", err)
+		}
+	} else {
+		return data, nil
+	}
+
 	var c = colly.NewCollector(
 		colly.Async(true),
 	)
-
-	var episodes []Episode
 
 	c.OnHTML("article.episode-item-wrapper", func(e *colly.HTMLElement) {
 		match := RegeExImageHash.FindStringSubmatch(e.ChildAttr("img", "src"))
@@ -273,20 +284,26 @@ func ScrapeEpisodes(imdbID string, season int) (Season, error) {
 				Score:    score,
 			}
 
-			episodes = append(episodes, episode)
+			data.Episodes = append(data.Episodes, episode)
 		}
 	})
 
-	err := c.Visit("https://www.imdb.com/title/" + imdbID + "/episodes/?season=" + strconv.Itoa(season))
+	err = c.Visit("https://www.imdb.com/title/" + imdbID + "/episodes/?season=" + strconv.Itoa(season))
 	if err != nil {
 		log.Fatal("Failed to visit the website:", err)
 	}
 
 	c.Wait()
 
-	return Season{
-		IMDbID:   imdbID,
-		Season:   season,
-		Episodes: episodes,
-	}, nil
+	data.IMDbID = imdbID
+	data.Season = season
+	data.ExpireAt = time.Now().Add(1 * time.Minute)
+
+	_, err = Episodes.InsertOne(Ctx, data)
+	if err != nil {
+		log.Fatalf("Error inserting data: %v", err)
+		return data, err
+	}
+
+	return data, nil
 }

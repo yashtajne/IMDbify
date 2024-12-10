@@ -36,17 +36,18 @@ type Cast struct {
 }
 
 type Season struct {
-	IMDbID   string
-	Season   int
-	Episodes []Episode
+	IMDbID   string    `bson:"imdb_id" json:"imdb_id"`
+	Season   int       `bson:"season" json:"season"`
+	Episodes []Episode `bson:"episodes" json:"episodes"`
+	ExpireAt time.Time `bson:"expireAt" json:"expireAt"`
 }
 
 type Episode struct {
-	Name     string
-	Overview string
-	Image    string
-	Aired    string
-	Score    float64
+	Name     string  `bson:"name" json:"name"`
+	Overview string  `bson:"overview" json:"overview"`
+	Image    string  `bson:"image" json:"image"`
+	Aired    string  `bson:"aired" json:"aired"`
+	Score    float64 `bson:"score" json:"score"`
 }
 
 var RegExIMDbID = regexp.MustCompile(`/title/(tt\d+)/`)
