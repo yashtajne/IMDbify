@@ -25,28 +25,28 @@ go run main.go
 
 ## Endpoints
 
-#### 1. `GET /search?query={title}`
+#### 1. `GET /search?title={title}`
 
 - **Description**: Search for movies or TV shows based on the query.
 - **Parameters**:
   - `query` (required): The title to search for.
-- **Example**: `GET /search?query=Inception`
+- **Example**: `GET /search?title=Inception`
 - **Response**: A list of matching titles with basic information (name, year, genre, etc.).
 
-#### 2. `GET /title/?imdb_id={imdbID}`
+#### 2. `GET /title/{imdbID}`
 
 - **Description**: Retrieve detailed information about a specific movie or TV show by IMDb ID.
 - **Parameters**:
   - `imdbID` (required): The IMDb ID of the movie/TV show.
-- **Example**: `GET /movie/tt1375666`
+- **Example**: `GET /title/tt1375666`
 - **Response**: Detailed movie/TV show information such as title, release date, genre, director, cast, and plot.
 
-#### 3. `GET /cast/?imdb_id={imdbID}`
+#### 3. `GET /title/{imdbID}/cast`
 
 - **Description**: Get cast details for a specific movie or TV show.
 - **Parameters**:
   - `imdbID` (required): The IMDb ID of the movie/TV show.
-- **Example**: `GET /cast/tt1375666`
+- **Example**: `GET /title/tt1375666/cast`
 - **Response**: A list of cast members, their roles, and IMDb IDs.
 
 
