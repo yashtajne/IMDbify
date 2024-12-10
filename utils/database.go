@@ -22,13 +22,17 @@ func ConnectToDatabase() error {
 	// Get the URI from the environment variable
 	uri := os.Getenv("URI")
 	if uri == "" {
+		// Attempt to load .env file
 		if err := godotenv.Load(); err != nil {
-			uri = os.Getenv("URI")
-			if uri == "" {
-				return fmt.Errorf("error loading .env file and URI environment variable is not set: %v", err)
-			} else {
-				log.Println("Warning: .env file not found, but URI environment variable is set. Continuing...")
-			}
+			log.Printf("Warning: .env file not found (%v). Checking URI environment variable...", err)
+		}
+
+		// Recheck URI after attempting to load .env
+		uri = os.Getenv("URI")
+		if uri == "" {
+			return fmt.Errorf("URI environment variable is not set, and .env file could not be loaded")
+		} else {
+			fmt.Println("URI loaded successfully")
 		}
 	}
 
