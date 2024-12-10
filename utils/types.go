@@ -35,6 +35,14 @@ type Cast struct {
 	Character string `bson:"character" json:"character"`
 }
 
+type Episode struct {
+	Name     string
+	Overview string
+	Image    string
+	Aired    string
+	Score    float64
+}
+
 var RegExIMDbID = regexp.MustCompile(`/title/(tt\d+)/`)
 var RegExPersonID = regexp.MustCompile(`/name/(nm\d+)/`)
 var RegExGenreID = regexp.MustCompile(`/interest/(in\d+)/`)

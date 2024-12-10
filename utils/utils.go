@@ -249,3 +249,40 @@ func ScrapeCast(imdbID string) ([]Cast, error) {
 
 	return cast, nil
 }
+
+func ScrapeEpisodes(imdbID string, season int) ([]Episode, error) {
+	var c = colly.NewCollector(
+		colly.Async(true),
+	)
+
+	var episodes []Episode
+
+	c.OnHTML("article.episode-item-wrapper", func(e *colly.HTMLElement) {
+		match := RegeExImageHash.FindStringSubmatch(e.ChildAttr("img", "src"))
+		if len(match) > 1 {
+			score, err := strconv.ParseFloat(e.ChildText("span.ipc-rating-star--rating"), 64)
+			if err != nil {
+				log.Fatal(err)
+				return
+			}
+			episode := Episode{
+				Name:     e.ChildText("div.ipc-title__text"),
+				Overview: e.ChildText("div.ipc-html-content-inner-div"),
+				Image:    match[1],
+				Aired:    e.DOM.Find("h4[data-testid='slate-list-card-title']").Next().Text(),
+				Score:    score,
+			}
+
+			episodes = append(episodes, episode)
+		}
+	})
+
+	err := c.Visit("https://www.imdb.com/title/" + imdbID + "/episodes/?season=" + strconv.Itoa(season))
+	if err != nil {
+		log.Fatal("Failed to visit the website:", err)
+	}
+
+	c.Wait()
+
+	return episodes, nil
+}

@@ -5,6 +5,7 @@ import (
 	"myapp/utils"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -64,6 +65,29 @@ func main() {
 		}
 
 		data, err := utils.ScrapeCast(imdbID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, data)
+	})
+
+	router.GET("/title/:imdb_id/episodes", func(c *gin.Context) {
+		imdbID := c.Param("imdb_id")
+		s := c.Query("season")
+		if imdbID == "" || s == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Missing parameter 'imdb_id'"})
+			return
+		}
+
+		season, err := strconv.Atoi(s)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		data, err := utils.ScrapeEpisodes(imdbID, season)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
