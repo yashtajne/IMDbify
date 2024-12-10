@@ -72,6 +72,22 @@ func main() {
 		c.JSON(http.StatusOK, data)
 	})
 
+	router.GET("/admin/:command", func(c *gin.Context) {
+		cmd := c.Param("command")
+		if cmd == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Missing parameter 'command'"})
+			return
+		}
+
+		status, err := utils.Admin(cmd)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, status)
+	})
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
