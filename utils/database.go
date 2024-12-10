@@ -6,7 +6,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -17,10 +16,6 @@ var Ctx context.Context
 
 // ConnectToDatabase connects to MongoDB and initializes the global client and context variables
 func ConnectToDatabase() error {
-	// Load the .env file
-	if err := godotenv.Load(); err != nil {
-		return fmt.Errorf("error loading .env file: %w", err)
-	}
 
 	// Get the URI from the environment variable
 	uri := os.Getenv("URI")

@@ -2,15 +2,26 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
 	"log"
 	"myapp/utils"
 	"net/http"
+	"os"
 	"strings"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
 	log.SetOutput(io.Discard)
+
+	// Load the .env file
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("error loading .env file: %w", err)
+		return
+	}
+
 	err := utils.ConnectToDatabase()
 	if err != nil {
 		log.Fatal("Unable to connect to the Database", err)
@@ -86,8 +97,14 @@ func main() {
 		w.Write(result)
 	})
 
-	// Start the server
-	if err := http.ListenAndServe(":8080", nil); err != nil {
-		log.Fatal("Failed to start server: ", err)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	log.Println("Server listening on http://localhost:" + port)
+	err = http.ListenAndServe(":"+port, nil)
+	if err != nil && !errors.Is(err, http.ErrServerClosed) {
+		log.Fatal("Error starting server:", err)
 	}
 }
