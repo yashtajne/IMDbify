@@ -1,100 +1,81 @@
 package main
 
 import (
-	"encoding/json"
-	"errors"
-	"io"
 	"log"
 	"myapp/utils"
 	"net/http"
 	"os"
 	"strings"
 
+	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
 
 func main() {
-	log.SetOutput(io.Discard)
+	// Suppress Gin's default logging if needed
+	gin.SetMode(gin.ReleaseMode)
 
 	// Load the .env file
 	if err := godotenv.Load(); err != nil {
-		log.Fatal("error loading .env file: %w", err)
-		return
+		log.Fatalf("Error loading .env file: %v", err)
 	}
 
+	// Connect to the database
 	err := utils.ConnectToDatabase()
 	if err != nil {
-		log.Fatal("Unable to connect to the Database", err)
-		return
+		log.Fatalf("Unable to connect to the Database: %v", err)
 	}
 
-	http.HandleFunc("/title", func(w http.ResponseWriter, r *http.Request) {
-		imdbID := r.URL.Query().Get("imdb_id")
+	// Create a Gin router
+	router := gin.Default()
+
+	// Routes
+	router.GET("/title", func(c *gin.Context) {
+		imdbID := c.Query("imdb_id")
 		if imdbID == "" {
-			http.Error(w, "Missing query parameter 'imdb_id'", http.StatusBadRequest)
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Missing query parameter 'imdb_id'"})
 			return
 		}
 
 		data, err := utils.Scrape(imdbID)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
-		result, err := json.Marshal(data)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(result)
+		c.JSON(http.StatusOK, data)
 	})
 
-	http.HandleFunc("/search", func(w http.ResponseWriter, r *http.Request) {
-		query := r.URL.Query().Get("title")
+	router.GET("/search", func(c *gin.Context) {
+		query := c.Query("title")
 		if query == "" {
-			http.Error(w, "Missing query parameter 'title'", http.StatusBadRequest)
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Missing query parameter 'title'"})
 			return
 		}
 
 		data, err := utils.Search(strings.ReplaceAll(query, " ", "+"))
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
-		result, err := json.Marshal(data)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(result)
+		c.JSON(http.StatusOK, data)
 	})
 
-	http.HandleFunc("/cast", func(w http.ResponseWriter, r *http.Request) {
-		imdbID := r.URL.Query().Get("imdb_id")
+	router.GET("/cast", func(c *gin.Context) {
+		imdbID := c.Query("imdb_id")
 		if imdbID == "" {
-			http.Error(w, "Missing query parameter 'imdb_id'", http.StatusBadRequest)
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Missing query parameter 'imdb_id'"})
 			return
 		}
 
 		data, err := utils.ScrapeCast(imdbID)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
-		result, err := json.Marshal(data)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(result)
+		c.JSON(http.StatusOK, data)
 	})
 
 	port := os.Getenv("PORT")
@@ -102,9 +83,8 @@ func main() {
 		port = "8080"
 	}
 
-	log.Println("Server listening on http://localhost:" + port)
-	err = http.ListenAndServe(":"+port, nil)
-	if err != nil && !errors.Is(err, http.ErrServerClosed) {
-		log.Fatal("Error starting server:", err)
+	log.Printf("Server is running on http://localhost:%s", port)
+	if err := router.Run("0.0.0.0:" + port); err != nil {
+		log.Fatalf("Error starting server: %v", err)
 	}
 }
