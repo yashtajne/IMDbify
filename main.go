@@ -24,10 +24,10 @@ func main() {
 	router := gin.Default()
 
 	// Routes
-	router.GET("/title", func(c *gin.Context) {
-		imdbID := c.Query("imdb_id")
+	router.GET("/title/:imdb_id", func(c *gin.Context) {
+		imdbID := c.Param("imdb_id")
 		if imdbID == "" {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Missing query parameter 'imdb_id'"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Missing parameter 'imdb_id'"})
 			return
 		}
 
@@ -56,10 +56,10 @@ func main() {
 		c.JSON(http.StatusOK, data)
 	})
 
-	router.GET("/cast", func(c *gin.Context) {
-		imdbID := c.Query("imdb_id")
+	router.GET("/title/:imdb_id/cast", func(c *gin.Context) {
+		imdbID := c.Param("imdb_id")
 		if imdbID == "" {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Missing query parameter 'imdb_id'"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Missing parameter 'imdb_id'"})
 			return
 		}
 
