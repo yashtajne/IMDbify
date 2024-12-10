@@ -35,6 +35,12 @@ type Cast struct {
 	Character string `bson:"character" json:"character"`
 }
 
+type Season struct {
+	IMDbID   string
+	Season   int
+	Episodes []Episode
+}
+
 type Episode struct {
 	Name     string
 	Overview string

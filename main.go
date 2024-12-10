@@ -98,12 +98,13 @@ func main() {
 
 	router.GET("/admin/:command", func(c *gin.Context) {
 		cmd := c.Param("command")
+		params := c.Query("params")
 		if cmd == "" {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Missing parameter 'command'"})
 			return
 		}
 
-		status, err := utils.Admin(cmd)
+		status, err := utils.Admin(cmd, params)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return

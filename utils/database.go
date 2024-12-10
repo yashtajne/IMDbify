@@ -16,6 +16,11 @@ import (
 var Client *mongo.Client
 var Ctx context.Context
 
+// MongoDB Database and Collections
+var Db *mongo.Database
+var Titles *mongo.Collection
+var Episodes *mongo.Collection
+
 // ConnectToDatabase connects to MongoDB and initializes the global client and context variables
 func ConnectToDatabase() error {
 
@@ -57,9 +62,13 @@ func ConnectToDatabase() error {
 
 	fmt.Println("Successfully connected to MongoDB!")
 
+	Db = Client.Database("imdb")
+	Titles = Db.Collection("titles")
+	Episodes = Db.Collection("episodes")
+
 	return nil
 }
 
-func GetCollection() *mongo.Collection {
-	return Client.Database("imdb").Collection("titles")
+func GetCollection(name string) *mongo.Collection {
+	return Db.Collection(name)
 }

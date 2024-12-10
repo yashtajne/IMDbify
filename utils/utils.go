@@ -17,7 +17,7 @@ import (
 func Scrape(imdbID string) (TitleData, error) {
 	var data TitleData
 
-	err := GetCollection().FindOne(Ctx, bson.M{"imdb_id": imdbID}).Decode(&data)
+	err := Titles.FindOne(Ctx, bson.M{"imdb_id": imdbID}).Decode(&data)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			fmt.Println("No document found with the given IMDb ID")
@@ -170,7 +170,7 @@ func Scrape(imdbID string) (TitleData, error) {
 		data.Episodes = 0
 	}
 
-	_, err = GetCollection().InsertOne(Ctx, data)
+	_, err = Titles.InsertOne(Ctx, data)
 	if err != nil {
 		log.Fatalf("Error inserting data: %v", err)
 		return data, err
@@ -250,7 +250,7 @@ func ScrapeCast(imdbID string) ([]Cast, error) {
 	return cast, nil
 }
 
-func ScrapeEpisodes(imdbID string, season int) ([]Episode, error) {
+func ScrapeEpisodes(imdbID string, season int) (Season, error) {
 	var c = colly.NewCollector(
 		colly.Async(true),
 	)
@@ -284,5 +284,9 @@ func ScrapeEpisodes(imdbID string, season int) ([]Episode, error) {
 
 	c.Wait()
 
-	return episodes, nil
+	return Season{
+		IMDbID:   imdbID,
+		Season:   season,
+		Episodes: episodes,
+	}, nil
 }
